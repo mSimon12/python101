@@ -37,8 +37,72 @@ def website_request(name: str) -> None:
     save_response_content("Website Content.html", res.content.__str__())
 
 
+class RequestsMethods(object):
+
+    def __init__(self, url: str):
+        self.url = url
+        self.session = requests.Session()
+        self.session.max_redirects = 3
+
+    def test_get(self):
+        print("Testing requests GET!")
+        payload = {"id": [1, 2, 3], "userId": 1}
+
+        try:
+            res = self.session.get(self.url, params=payload, timeout=1)            # Execute GET command
+            res.raise_for_status()
+        except requests.HTTPError as error:
+            print(error)
+        except requests.exceptions.TooManyRedirects as error:
+            print(error)
+        except requests.Timeout as error:
+            print("Timeout happened!")
+            print(error)
+            return
+
+        print("Request to URL " + res.url)
+        print_response_status(res.status_code)
+        print_response_head(res.headers)
+
+        print("Response as Content:")
+        print(res.content)
+        print("Response as Text:")
+        print(res.text)
+        print("Response as JSON:")
+        for element in res.json():
+            print(element)
+
+    def test_post(self):
+        print("Testing requests POST!")
+        new_data = {
+            "userId": 2,
+            "id": 1,
+            "title": "aii caramba",
+            "body": "dont remind me"
+        }
+
+        try:
+            res = self.session.post(self.url, json=new_data)            # Execute POST command
+            res.raise_for_status()
+        except requests.HTTPError as error:
+            print(error)
+        except requests.exceptions.TooManyRedirects as error:
+            print(error)
+
+        print_response_status(res.status_code)
+        print_response_head(res.headers)
+        print("Response as JSON:")
+        print(res.json())
+
+
 def main() -> None:
-    website_request("https://scotch.io")
+    exp_url = "https://jsonplaceholder.typicode.com/posts"
+    req_examples = RequestsMethods(exp_url)
+    req_examples.test_get()
+    req_examples.test_post()
+
+    # website_request("https://scotch.io")
+    # translation_api()
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from . import db
 from . import auth
-
+from . import blog
 
 def create_app(test_config=None):
     """ Flask Constructor
@@ -40,8 +40,9 @@ def create_app(test_config=None):
 
     db.init_app_db(app)
 
-    app.register_blueprint(auth.bp)
-
+    app.register_blueprint(auth.bp)     # add Authentication blueprint
+    app.register_blueprint(blog.bp)     # add Blog blueprint
+    app.add_url_rule('/', endpoint='index')
 
     return app
 
